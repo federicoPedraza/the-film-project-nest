@@ -1,3 +1,4 @@
 export * from "./repository.interface";
 export * from "./user-repository.interface";
-export * from "./redis.interface";
+export * from "./redis-repository.interface";
+export * from "./movie-repository.interface";

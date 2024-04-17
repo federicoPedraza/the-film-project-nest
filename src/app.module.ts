@@ -23,6 +23,7 @@ import * as Controller from "./infrastructure/modules";
     Config.RedisModule,
     Config.BcryptModule,
     Controller.AuthModule,
+    Controller.MovieModule,
   ],
   controllers: [AppController],
 })
