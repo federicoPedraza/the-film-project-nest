@@ -4,11 +4,7 @@ import { ListMoviesPresentation, ListedMovieItemPresentation } from "src/applica
 import { IProviderQuery } from "src/infrastructure/interfaces";
 import { MovieProviderStrategyFactory } from "src/infrastructure/services";
 
-const DefaultListMovieQuery: IListMovieQuery = {
-  count: 6,
-  skip: 0,
-  ignoreProviders: [],
-};
+export const DEFAULT_MOVIE_LIST_COUNT = 6;
 
 export class ListMoviesV1 {
   private readonly logger = new Logger(ListMoviesV1.name);
@@ -16,12 +12,10 @@ export class ListMoviesV1 {
   constructor(@Inject(PORT.MovieProviderStrategyFactory) private readonly movieProviderStrategyFactory: MovieProviderStrategyFactory) {}
 
   async exec(query?: IListMovieQuery): Promise<ListMoviesPresentation> {
-    if (!Boolean(query)) query = DefaultListMovieQuery;
-
     const items: ListedMovieItemPresentation[] = await this.getMovies(query);
 
     return {
-      page: 0,
+      page: query.page,
       items,
       count: items.length,
     };
@@ -48,7 +42,7 @@ export class ListMoviesV1 {
 
     const providerQuery: IProviderQuery = {
       count: query?.count ?? 0,
-      skip: query?.skip ?? 0,
+      skip: query?.page ? query?.page * query?.count : 0,
     };
     const movies = await strategy.getFilms(providerQuery);
     return movies.map(movie => ({
@@ -60,6 +54,6 @@ export class ListMoviesV1 {
 
 export interface IListMovieQuery {
   count: number;
-  skip: number;
+  page: number;
   ignoreProviders: EMovieProvider[];
 }

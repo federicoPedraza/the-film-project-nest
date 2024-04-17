@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Query, Request, UseGuar
 import { PostMovieDTO } from "src/application/dtos";
 import { EMovieProvider } from "src/application/enums";
 import { DefaultApiResponse, ListMoviesPresentation, PostMoviePresentation } from "src/application/presentations";
-import { GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
+import { DEFAULT_MOVIE_LIST_COUNT, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
 import { IMovie } from "src/domain/entities";
 import { JwtAuthGuard } from "src/infrastructure/config";
 
@@ -26,8 +26,8 @@ export class MovieControllerV1 {
   }
 
   @Get("/list")
-  async list(@Query("count") count: number, @Query("skip") skip: number): Promise<DefaultApiResponse<ListMoviesPresentation>> {
-    const list = await this.listMoviesUseCase.exec({ count, skip, ignoreProviders: [] });
+  async list(@Query("count") count: number, @Query("page") page: number): Promise<DefaultApiResponse<ListMoviesPresentation>> {
+    const list = await this.listMoviesUseCase.exec({ count: Boolean(count) ? count : DEFAULT_MOVIE_LIST_COUNT, page: Boolean(page) ? page - 1 : 0, ignoreProviders: [] });
 
     return { message: "List of movies returned successfully", info: list, status: HttpStatus.OK };
   }
