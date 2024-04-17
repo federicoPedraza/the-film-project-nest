@@ -20,8 +20,6 @@ export class ListMoviesV1 {
   async exec(query?: IListMovieQuery): Promise<ListMoviesPresentation> {
     if (!Boolean(query)) query = DefaultListMovieQuery;
 
-    const starwarsMovies = await this.starwarsRepository.getFilms();
-
     const movies = await this.movieRepository.findAll({
       query: {
         provider: { $nin: query.ignoreProviders },
@@ -38,6 +36,8 @@ export class ListMoviesV1 {
     });
 
     if (items.length < query.count) {
+      const starwarsMovies = await this.starwarsRepository.getFilms();
+
       items = [
         ...items,
         ...starwarsMovies.slice(0, query.count - items.length).map(movie => ({

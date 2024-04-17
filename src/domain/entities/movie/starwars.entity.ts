@@ -2,8 +2,9 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { IMovie, Movie } from "./movie.base";
 
 export interface IStarwarsMovie extends IMovie {
-  providerId: number;
+  providerReference: string;
   openingCrawl: string;
+  episodeId: number;
   species?: string[];
   planets?: string[];
   characters?: string[];
@@ -13,11 +14,14 @@ export interface IStarwarsMovie extends IMovie {
 
 @Schema()
 export class StarwarsMovie extends Movie implements IStarwarsMovie {
-  @Prop({ type: Number, required: true })
-  providerId: number;
+  @Prop({ type: String, required: true })
+  providerReference: string;
 
   @Prop({ type: String, required: true })
   openingCrawl: string;
+
+  @Prop({ type: Number })
+  episodeId: number;
 
   @Prop({ type: [String] })
   species: string[];
