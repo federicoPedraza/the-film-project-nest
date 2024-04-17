@@ -29,32 +29,4 @@ export class PostMovieDTO {
   @IsString()
   @IsOptional()
   producer?: string;
-
-  // --- STAR WARS FIELDS
-  @IsNumber()
-  @IsOptional()
-  providerId: number;
-
-  @IsOptional()
-  opening_crawl: string;
-
-  @IsOptional()
-  @IsArray()
-  species?: string[];
-
-  @IsArray()
-  @IsOptional()
-  planets?: string[];
-
-  @IsArray()
-  @IsOptional()
-  characters?: string[];
-
-  @IsArray()
-  @IsOptional()
-  starships?: string[];
-
-  @IsArray()
-  @IsOptional()
-  vehicles?: string[];
 }

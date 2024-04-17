@@ -1,6 +1,7 @@
 import { Inject, Logger } from "@nestjs/common";
+import { Types } from "mongoose";
 import { PostMovieDTO } from "src/application/dtos";
-import { PORT } from "src/application/enums";
+import { EMovieProvider, PORT } from "src/application/enums";
 import { IMovie } from "src/domain/entities";
 import { IMovieRepository } from "src/infrastructure/interfaces";
 
@@ -9,12 +10,20 @@ export class PostMovieV1 {
 
   constructor(@Inject(PORT.Movie) private readonly movieRepository: IMovieRepository) {}
 
-  async exec(data: PostMovieDTO): Promise<IMovie> {
-    const movie: IMovie = {
-      ...data,
+  async exec(body: PostMovieDTO, poster: string): Promise<IMovie> {
+    const userId = new Types.ObjectId(poster);
+
+    const data: IMovie = {
+      director: body.director,
+      title: body.title,
+      url: body.url,
+      provider: EMovieProvider.CUSTOM,
+      metadata: {
+        uploadedBy: userId,
+      },
     };
 
-    const result = await this.movieRepository.create(movie);
+    const result = await this.movieRepository.create(data);
 
     return result;
   }
