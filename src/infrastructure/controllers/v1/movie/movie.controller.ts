@@ -36,6 +36,6 @@ export class MovieControllerV1 {
   async getDetails(@Param("id") movieId: string, @Param("provider") provider: EMovieProvider): Promise<DefaultApiResponse<IMovie>> {
     const details = await this.getMovieDetailsUseCase.exec(provider, movieId);
 
-    return { message: "List of movies returned successfully", info: details, status: HttpStatus.OK };
+    return { message: "Movie details returned successfully", info: details, status: HttpStatus.OK };
   }
 }

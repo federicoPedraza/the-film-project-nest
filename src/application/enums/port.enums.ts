@@ -3,4 +3,5 @@ export enum PORT {
   Redis = "Redis.Port",
   Movie = "Movie.Port",
   Starwars = "Starwars.Port",
+  MovieProviderStrategyFactory = "MovieProviderStrategyFactory.Port",
 }
