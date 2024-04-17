@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Movie } from "./movie.base";
+import { IMovie, Movie } from "./movie.base";
 
-export interface IStarwarsMovie {
+export interface IStarwarsMovie extends IMovie {
   providerId: number;
   openingCrawl: string;
   species?: string[];

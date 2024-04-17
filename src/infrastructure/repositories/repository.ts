@@ -15,15 +15,11 @@ export abstract class Repository<T> implements IRepository<T> {
   }
 
   async findAll(filter?: FilterQuery<T>): Promise<T[]> {
-    const query = this.model.find(filter.query);
+    const query = this.model.find(filter?.query);
 
-    if (Boolean(filter.populate)) query.populate(filter.populate);
-
-    if (Boolean(filter.skip) && Boolean(filter.limit)) {
-      const skip = Boolean(filter.skip) ? (filter.skip - 1) * filter.limit : undefined;
-      query.skip(skip);
-      query.limit(filter.limit);
-    }
+    if (Boolean(filter?.populate)) query.populate(filter?.populate);
+    if (Boolean(filter?.limit)) query.limit(filter?.limit);
+    if (Boolean(filter?.skip)) query.skip(filter.skip);
 
     return await query.exec();
   }
