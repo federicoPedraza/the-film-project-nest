@@ -25,6 +25,7 @@ import { AccessControlModule } from "../config/access-control";
     UseCase.ListMoviesV1,
     UseCase.GetMovieDetailsV1,
     UseCase.EditMovieV1,
+    UseCase.DeleteMovieV1,
     { provide: PORT.Movie, useClass: MovieRepository },
     { provide: PORT.Starwars, useClass: StarwarsRepository },
     { provide: PORT.User, useClass: UserRepository },

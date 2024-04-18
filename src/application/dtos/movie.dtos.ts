@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, isNotEmpty } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
 import { ProviderType } from "src/infrastructure/interfaces";
 
 export class PostMovieDTO {

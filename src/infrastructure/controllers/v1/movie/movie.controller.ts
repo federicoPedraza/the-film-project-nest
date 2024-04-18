@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
 import { EditMovieDTO, PostMovieDTO } from "src/application/dtos";
 import { EMovieProvider } from "src/application/enums";
 import { DefaultApiResponse, ListMoviesPresentation, PostMoviePresentation } from "src/application/presentations";
-import { DEFAULT_MOVIE_LIST_COUNT, EditMovieV1, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
+import { DEFAULT_MOVIE_LIST_COUNT, DeleteMovieV1, EditMovieV1, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
 import { EUserRole, IMovie } from "src/domain/entities";
 import { JwtAuthGuard, RoleGuard } from "src/infrastructure/config";
 import { Roles } from "src/infrastructure/decorators";
@@ -18,6 +18,7 @@ export class MovieControllerV1 {
     private readonly listMoviesUseCase: ListMoviesV1,
     private readonly getMovieDetailsUseCase: GetMovieDetailsV1,
     private readonly editMovieUseCase: EditMovieV1,
+    private readonly deleteMovieUseCase: DeleteMovieV1,
   ) {}
 
   @Post("/")
@@ -50,5 +51,13 @@ export class MovieControllerV1 {
     await this.editMovieUseCase.exec(body, reference, provider);
 
     return { message: "Movie editted successfully", status: HttpStatus.OK };
+  }
+
+  @Delete("/:provider/:reference")
+  @Roles(EUserRole.ADMINISTRATOR)
+  async deleteMovie(@Param("provider") provider: EMovieProvider, @Param("reference") reference: string): Promise<DefaultApiResponse<any>> {
+    await this.deleteMovieUseCase.exec(reference, provider);
+
+    return { message: "Movie deleted successfully", status: HttpStatus.OK };
   }
 }
