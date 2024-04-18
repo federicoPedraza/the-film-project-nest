@@ -1,22 +1,21 @@
 import { Inject, Logger } from "@nestjs/common";
 import { EMovieProvider, PORT } from "src/application/enums";
+import { MovieNotFound } from "src/application/exceptions";
 import { IMovie } from "src/domain/entities";
-import { IMovieRepository, IStarwarsRepository } from "src/infrastructure/interfaces";
+import { MovieProviderStrategyFactory } from "src/infrastructure/services";
 
 export class GetMovieDetailsV1 {
   private readonly logger = new Logger(GetMovieDetailsV1.name);
 
-  constructor(
-    @Inject(PORT.Movie) private readonly movieRepository: IMovieRepository,
-    @Inject(PORT.Starwars) private readonly starwarsRepository: IStarwarsRepository,
-  ) {}
+  constructor(@Inject(PORT.MovieProviderStrategyFactory) private readonly movieProviderStrategyFactory: MovieProviderStrategyFactory) {}
 
   async exec(provider: EMovieProvider, id: string): Promise<IMovie> {
-    switch (provider) {
-      case EMovieProvider.STARWARS:
-        return await this.starwarsRepository.getFilm(id);
-      default:
-        return await this.movieRepository.findOne({ query: { _id: id } });
-    }
+    const strategy = this.movieProviderStrategyFactory.getStrategy(provider);
+
+    const movie = await strategy.getFilm(id);
+
+    if (!Boolean(movie)) throw new MovieNotFound();
+
+    return movie;
   }
 }

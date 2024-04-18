@@ -23,7 +23,9 @@ export class ListMoviesV1 {
 
   private async getMovies(query?: IListMovieQuery): Promise<ListedMovieItemPresentation[]> {
     let items: ListedMovieItemPresentation[] = [];
-    const providers = Object.values(EMovieProvider).filter(p => !query.ignoreProviders.includes(p));
+    let providers = Object.values(EMovieProvider);
+
+    if (Boolean(query.provider)) providers = providers.filter(p => query.provider.includes(p));
 
     for (const provider of providers) {
       const providerMovies = await this.getMoviesFromProvider(provider, query);
@@ -43,8 +45,12 @@ export class ListMoviesV1 {
     const providerQuery: IProviderQuery = {
       count: query?.count ?? 0,
       skip: query?.page ? query?.page * query?.count : 0,
+      // we want to propagate errors if the user is searching for that specific provider and we can't supply films
+      propagateErrors: Boolean(query?.provider),
     };
+
     const movies = await strategy.getFilms(providerQuery);
+
     return movies.map(movie => ({
       title: movie.title,
       provider,
@@ -55,5 +61,5 @@ export class ListMoviesV1 {
 export interface IListMovieQuery {
   count: number;
   page: number;
-  ignoreProviders: EMovieProvider[];
+  provider: EMovieProvider;
 }

@@ -20,6 +20,8 @@ export class MovieRepository extends Repository<Movie> implements IMovieReposito
     if (Boolean(filter?.count)) query.limit(filter?.count);
     if (Boolean(filter?.skip)) query.skip(filter.skip);
 
-    return await query.exec();
+    const movies = await query.exec();
+
+    return movies;
   }
 }

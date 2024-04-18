@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { EMovieProvider, PORT } from "src/application/enums";
+import { InvalidProvider } from "src/application/exceptions";
 import { IMovieRepository, IProviderRepository, IStarwarsRepository } from "src/infrastructure/interfaces";
 
 @Injectable()
@@ -19,6 +20,8 @@ export class MovieProviderStrategyFactory {
 
   getStrategy(provider: string): IProviderRepository<any> {
     const strategy = this.strategyMap.get(provider as EMovieProvider);
+
+    if (!Boolean(strategy)) throw new InvalidProvider();
 
     return strategy;
   }

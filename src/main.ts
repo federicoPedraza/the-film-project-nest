@@ -1,12 +1,14 @@
 import helmet from "helmet";
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./app.module";
 import { Logger, ValidationPipe, VersioningType } from "@nestjs/common";
+import { HttpExceptionsFilter } from "./infrastructure/filters";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  const httpAdapter = app.get(HttpAdapterHost);
 
   app.use(helmet());
   app.enableCors();
@@ -23,6 +25,8 @@ async function bootstrap() {
   );
   app.setGlobalPrefix("api");
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
+
+  app.useGlobalFilters(new HttpExceptionsFilter(httpAdapter, configService));
 
   const NODE_PORT = configService.get<number>("NODE_PORT");
   const NODE_ENV = configService.get<string>("NODE_ENV");

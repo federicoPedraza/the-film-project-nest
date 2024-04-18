@@ -1,10 +1,11 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { IStarwarsRepository } from "src/infrastructure/interfaces";
+import { IProviderQuery, IStarwarsRepository } from "src/infrastructure/interfaces";
 import { ConfigService } from "@nestjs/config";
 import { catchError, lastValueFrom, map } from "rxjs";
 import { IStarwarsMovie } from "src/domain/entities";
 import { EMovieProvider } from "src/application/enums";
+import { MovieNotFound, ProviderNotAvailable } from "src/application/exceptions";
 
 @Injectable()
 export class StarwarsRepository implements IStarwarsRepository {
@@ -25,7 +26,8 @@ export class StarwarsRepository implements IStarwarsRepository {
       this.httpService.get(url).pipe(
         map(res => res.data),
         catchError(error => {
-          throw new Error(error?.status);
+          if (error?.response?.status === HttpStatus.NOT_FOUND) throw new MovieNotFound();
+          throw new ProviderNotAvailable(EMovieProvider.STARWARS);
         }),
       ),
     );
@@ -33,23 +35,32 @@ export class StarwarsRepository implements IStarwarsRepository {
     return this.map(result);
   }
 
-  async getFilms(): Promise<IStarwarsMovie[]> {
+  async getFilms(query?: IProviderQuery): Promise<IStarwarsMovie[]> {
     const url: string = `${this.STARWARS_BASE_URL}/films`;
 
-    const result = await lastValueFrom(
-      this.httpService.get(url).pipe(
-        map(res => res.data.results),
-        catchError(error => {
-          throw new Error(error?.status);
-        }),
-      ),
-    );
+    try {
+      const result = await lastValueFrom(
+        this.httpService.get(url).pipe(
+          map(res => res.data.results),
+          catchError(() => {
+            throw new ProviderNotAvailable(EMovieProvider.STARWARS);
+          }),
+        ),
+      );
 
-    const movies: IStarwarsMovie[] = result.map(movie => {
-      return this.map(movie);
-    });
+      const movies: IStarwarsMovie[] = result.map(movie => {
+        return this.map(movie);
+      });
 
-    return movies;
+      return movies;
+    } catch (error) {
+      if (error instanceof ProviderNotAvailable) {
+        if (!Boolean(query) || query?.propagateErrors) throw error;
+        else return [];
+      }
+
+      throw error;
+    }
   }
 
   map = (movie: any): IStarwarsMovie => {

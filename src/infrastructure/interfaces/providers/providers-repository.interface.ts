@@ -1,6 +1,7 @@
 export interface IProviderQuery {
   count: number;
   skip: number;
+  propagateErrors?: boolean;
 }
 
 export interface IProviderRepository<T> {
