@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { MovieSchema, StarwarsMovieSchema, UserSchema } from "src/domain/entities";
 import { MovieControllerV1 } from "../controllers";
-import { MovieRepository, RedisRepository, StarwarsRepository, UserRepository } from "../repositories";
+import { MovieRepository, StarwarsRepository, UserRepository } from "../repositories";
 import { Entity, PORT } from "src/application/enums";
 import * as UseCase from "src/application/use-cases";
 import { MovieProviderFactoryModule, MovieProviderStrategyFactory } from "../services";
@@ -29,7 +29,6 @@ import { AccessControlModule } from "../config/access-control";
     { provide: PORT.Movie, useClass: MovieRepository },
     { provide: PORT.Starwars, useClass: StarwarsRepository },
     { provide: PORT.User, useClass: UserRepository },
-    { provide: PORT.Redis, useClass: RedisRepository },
     { provide: PORT.MovieProviderStrategyFactory, useClass: MovieProviderStrategyFactory },
   ],
   exports: [],

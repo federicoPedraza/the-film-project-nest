@@ -20,7 +20,6 @@ import * as Controller from "./infrastructure/modules";
     }),
     Config.JWTModule,
     Config.MongoDBModule,
-    Config.RedisModule,
     Config.BcryptModule,
     Controller.AuthModule,
     Controller.MovieModule,

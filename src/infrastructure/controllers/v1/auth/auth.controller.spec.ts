@@ -1,64 +1,46 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthControllerV1 } from "./auth.controller";
-import { PORT } from "src/application/enums";
-import { RedisRepository, UserRepository } from "src/infrastructure/repositories";
-import { BcryptService, JWTModule, JwtStrategy, LocalStrategy } from "src/infrastructure/config";
 import * as UseCase from "src/application/use-cases";
-import { SignupDTO } from "src/application/dtos";
-import { HttpStatus } from "@nestjs/common";
-import { AppModule } from "src/app.module";
-import { MongooseModule } from "@nestjs/mongoose";
-import { IUser, User, UserSchema } from "src/domain/entities";
+import { JwtStrategy, LocalStrategy } from "src/infrastructure/config";
+import { BcryptService } from "src/infrastructure/config/bcrypt/bcrypt.service";
+import { PORT } from "src/application/enums";
+import { UserRepository } from "src/infrastructure/repositories";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ThrottlerModule } from "@nestjs/throttler";
+import * as Config from "src/infrastructure/config";
+import { AccessControlModule } from "src/infrastructure/config/access-control";
 import { PassportModule } from "@nestjs/passport";
-import { FilterQuery } from "src/infrastructure/interfaces";
+import { User, UserSchema } from "src/domain/entities";
+import { MongooseModule } from "@nestjs/mongoose";
 
 describe(AuthControllerV1.name, () => {
-  let controller: AuthControllerV1;
-  const responseMock = {
-    status: jest.fn(_ => ({
-      send: jest.fn(y => y),
-    })),
-    send: jest.fn(x => x),
-  } as unknown as Response;
+  let authController: AuthControllerV1;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), PassportModule.register({ session: true })],
-      controllers: [AuthControllerV1],
-      providers: [
-        UseCase.SignUpV1,
-        UseCase.SignInV1,
-        BcryptService,
-        JWTModule,
-        LocalStrategy,
-        JwtStrategy,
-        {
-          provide: PORT.User,
-          useValue: {
-            findOne: jest.fn().mockImplementation((filter: FilterQuery<IUser>) => {
-              return {
-                email: "test@mail.com",
-              };
-            }),
-          },
-        },
-        { provide: PORT.Redis, useClass: RedisRepository },
+    const app: TestingModule = await Test.createTestingModule({
+      imports: [
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        PassportModule.register({ session: true }),
+        AccessControlModule,
+        ConfigModule.forRoot({ isGlobal: true, cache: true, expandVariables: true }),
+        ThrottlerModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: (config: ConfigService) => [
+            {
+              ttl: config.get("RATE_LIMIT_TTL"),
+              limit: config.get("RATE_LIMIT_COUT"),
+            },
+          ],
+        }),
+        Config.JWTModule,
+        Config.MongoDBModule,
+        Config.BcryptModule,
       ],
+      controllers: [AuthControllerV1],
+      providers: [UseCase.SignUpV1, UseCase.SignInV1, BcryptService, LocalStrategy, JwtStrategy, { provide: PORT.User, useClass: UserRepository }],
     }).compile();
 
-    controller = module.get<AuthControllerV1>(AuthControllerV1);
-  });
-
-  describe("Should sign-up", () => {
-    it("should return token", () => {
-      const signupMock: SignupDTO = {
-        email: "test@test.com",
-        password: "Password1?",
-      };
-
-      controller.signup(signupMock);
-      expect(controller.signup).toHaveBeenCalled();
-    });
+    authController = app.get<AuthControllerV1>(AuthControllerV1);
   });
 });

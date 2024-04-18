@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { EUserRole } from "src/domain/entities";
 
 export class SignupDTO {
   @IsEmail()
@@ -23,6 +24,7 @@ export class SignInDTO {
 // used for jwt-strategy
 export class TokenPayloadDTO {
   _id: string;
+  role: EUserRole;
   iat?: number;
   exp?: number;
 }

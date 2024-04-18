@@ -5,7 +5,7 @@ import { PORT } from "src/application/enums";
 import { IUser } from "src/domain/entities";
 import { BcryptService } from "src/infrastructure/config/bcrypt/bcrypt.service";
 import { SignInDTO, TokenPayloadDTO } from "src/application/dtos";
-import { IRedisRepository, IUserRepository } from "src/infrastructure/interfaces";
+import { IUserRepository } from "src/infrastructure/interfaces";
 import { InvalidCredentials, UserNotFound } from "src/application/exceptions";
 
 @Injectable()
@@ -14,7 +14,6 @@ export class SignInV1 {
 
   constructor(
     @Inject(PORT.User) private readonly userRepository: IUserRepository,
-    @Inject(PORT.Redis) private readonly redisRepository: IRedisRepository,
     private readonly bcryptService: BcryptService,
     private readonly jwtService: JwtService,
   ) {}
@@ -22,16 +21,8 @@ export class SignInV1 {
   async exec(user: IUser): Promise<any> {
     const payload: TokenPayloadDTO = {
       _id: user._id,
+      role: user.role,
     };
-
-    await this.redisRepository.set(
-      user._id,
-      JSON.stringify({
-        _id: user._id,
-        email: user.email,
-        role: user.role,
-      }),
-    );
 
     return {
       token: this.jwtService.sign(payload),

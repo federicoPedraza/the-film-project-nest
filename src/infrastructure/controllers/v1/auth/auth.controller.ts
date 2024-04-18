@@ -34,14 +34,14 @@ export class AuthControllerV1 {
   @Get("/")
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(EUserRole.REGULAR)
-  async health(): Promise<DefaultApiResponse<any>> {
-    return { message: "User logged in", status: HttpStatus.OK };
+  async health(@Request() req): Promise<DefaultApiResponse<any>> {
+    return { message: `User logged in (${req.user.email})`, status: HttpStatus.OK };
   }
 
   @Get("/admin")
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(EUserRole.ADMINISTRATOR)
-  async healthAdmin(): Promise<DefaultApiResponse<any>> {
-    return { message: "User logged in as an admin", status: HttpStatus.OK };
+  async healthAdmin(@Request() req): Promise<DefaultApiResponse<any>> {
+    return { message: `User logged in as an admin (${req.user.email})`, status: HttpStatus.OK };
   }
 }
