@@ -7,10 +7,6 @@ export class PostMovieDTO {
 
   @IsString()
   @IsNotEmpty()
-  url: string;
-
-  @IsString()
-  @IsNotEmpty()
   director: string;
 
   @IsDate()

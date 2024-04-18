@@ -16,7 +16,6 @@ export class PostMovieV1 {
     const data: IMovie = {
       director: body.director,
       title: body.title,
-      url: body.url,
       provider: EMovieProvider.CUSTOM,
       metadata: {
         uploadedBy: userId,

@@ -66,7 +66,6 @@ export class StarwarsRepository implements IStarwarsRepository {
       starships: movie.starships,
       vehicles: movie.vehicles,
       metadata: undefined,
-      url: undefined,
     };
   };
 }

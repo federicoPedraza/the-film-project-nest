@@ -7,7 +7,6 @@ import { IMovieMetadata, MovieMetadata, MovieMetadataSchema } from "./movie-meta
 export interface IMovie extends IMongoDBEntity {
   title: string;
   director: string;
-  url: string;
   provider: EMovieProvider;
   metadata: IMovieMetadata;
 }
@@ -19,9 +18,6 @@ export class Movie extends Document implements IMovie {
 
   @Prop({ type: String, required: true })
   director: string;
-
-  @Prop({ type: String, required: true })
-  url: string;
 
   @Prop({ type: String, enum: EMovieProvider, required: true })
   provider: EMovieProvider;
