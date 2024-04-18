@@ -21,6 +21,8 @@ export class RoleGuard implements CanActivate {
 
     if (!Boolean(user)) throw new InvalidToken();
 
+    if (!Boolean(requiredRoles)) return true;
+
     for (const requiredRole of requiredRoles) {
       if (
         this.accessControlService.isRoleAuthorized({

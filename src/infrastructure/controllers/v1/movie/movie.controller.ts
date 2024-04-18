@@ -30,7 +30,6 @@ export class MovieControllerV1 {
   }
 
   @Get("/list")
-  @Roles(EUserRole.REGULAR)
   async list(@Query("count") count: number, @Query("page") page: number, @Query("provider") provider: EMovieProvider): Promise<DefaultApiResponse<ListMoviesPresentation>> {
     const list = await this.listMoviesUseCase.exec({ count: Boolean(count) ? count : DEFAULT_MOVIE_LIST_COUNT, page: Boolean(page) ? page - 1 : 0, provider });
 
