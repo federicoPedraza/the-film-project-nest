@@ -2,7 +2,7 @@ import { Inject, Logger } from "@nestjs/common";
 import { SignupDTO } from "src/application/dtos";
 import { PORT } from "src/application/enums";
 import { UserAlreadyExists } from "src/application/exceptions";
-import { EUserStatus, IUser } from "src/domain/entities";
+import { EUserRole, EUserStatus, IUser } from "src/domain/entities";
 import { IUserRepository } from "src/infrastructure/interfaces";
 import { BcryptService } from "src/infrastructure/config/bcrypt/bcrypt.service";
 
@@ -26,6 +26,7 @@ export class SignUpV1 {
       email: data.email,
       password: cryptedPassword,
       status: EUserStatus.ACTIVE,
+      role: EUserRole.REGULAR,
     };
 
     const user = await this.userRepository.create(userData);

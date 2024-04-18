@@ -3,14 +3,15 @@ import { EditMovieDTO, PostMovieDTO } from "src/application/dtos";
 import { EMovieProvider } from "src/application/enums";
 import { DefaultApiResponse, ListMoviesPresentation, PostMoviePresentation } from "src/application/presentations";
 import { DEFAULT_MOVIE_LIST_COUNT, EditMovieV1, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
-import { IMovie } from "src/domain/entities";
-import { JwtAuthGuard } from "src/infrastructure/config";
+import { EUserRole, IMovie } from "src/domain/entities";
+import { JwtAuthGuard, RoleGuard } from "src/infrastructure/config";
+import { Roles } from "src/infrastructure/decorators";
 
 @Controller({
   version: "1",
   path: "movies",
 })
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class MovieControllerV1 {
   constructor(
     private readonly postMovieUseCase: PostMovieV1,
@@ -20,6 +21,7 @@ export class MovieControllerV1 {
   ) {}
 
   @Post("/")
+  @Roles(EUserRole.ADMINISTRATOR)
   async post(@Body() body: PostMovieDTO, @Request() req): Promise<DefaultApiResponse<PostMoviePresentation>> {
     const movie = await this.postMovieUseCase.exec(body, req.user._id);
 
@@ -27,6 +29,7 @@ export class MovieControllerV1 {
   }
 
   @Get("/list")
+  @Roles(EUserRole.REGULAR)
   async list(@Query("count") count: number, @Query("page") page: number, @Query("provider") provider: EMovieProvider): Promise<DefaultApiResponse<ListMoviesPresentation>> {
     const list = await this.listMoviesUseCase.exec({ count: Boolean(count) ? count : DEFAULT_MOVIE_LIST_COUNT, page: Boolean(page) ? page - 1 : 0, provider });
 
@@ -34,6 +37,7 @@ export class MovieControllerV1 {
   }
 
   @Get("/:provider/:reference")
+  @Roles(EUserRole.REGULAR)
   async getDetails(@Param("reference") reference: string, @Param("provider") provider: EMovieProvider): Promise<DefaultApiResponse<IMovie>> {
     const details = await this.getMovieDetailsUseCase.exec(provider, reference);
 
@@ -41,6 +45,7 @@ export class MovieControllerV1 {
   }
 
   @Put("/:provider/:reference")
+  @Roles(EUserRole.ADMINISTRATOR)
   async updateMovie(@Param("provider") provider: EMovieProvider, @Param("reference") reference: string, @Body() body: EditMovieDTO): Promise<DefaultApiResponse<any>> {
     await this.editMovieUseCase.exec(body, reference, provider);
 

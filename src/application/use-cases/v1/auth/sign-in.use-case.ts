@@ -29,6 +29,7 @@ export class SignInV1 {
       JSON.stringify({
         _id: user._id,
         email: user.email,
+        role: user.role,
       }),
     );
 

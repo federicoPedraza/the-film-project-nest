@@ -9,9 +9,10 @@ import { PORT } from "src/application/enums";
 import * as UseCase from "src/application/use-cases";
 import { BcryptService } from "../config/bcrypt/bcrypt.service";
 import { JwtStrategy, LocalStrategy } from "../config";
+import { AccessControlModule } from "../config/access-control";
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), PassportModule.register({ session: true })],
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), PassportModule.register({ session: true }), AccessControlModule],
   controllers: [AuthControllerV1],
   providers: [
     UseCase.SignUpV1,

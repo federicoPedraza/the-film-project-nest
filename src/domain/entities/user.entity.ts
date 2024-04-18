@@ -7,12 +7,18 @@ export interface IUser extends IMongoDBEntity {
   email: string;
   password?: string;
   status: EUserStatus;
+  role: EUserRole;
 }
 
 export enum EUserStatus {
   ACTIVE = "active",
   DELETED = "deleted",
   BLOCKED = "blocked",
+}
+
+export enum EUserRole {
+  ADMINISTRATOR = "administrator",
+  REGULAR = "regular",
 }
 
 @Schema({ versionKey: false, timestamps: true })
@@ -38,6 +44,14 @@ export class User extends Document implements IUser {
     required: true,
   })
   status: EUserStatus;
+
+  @Prop({
+    type: String,
+    enum: EUserRole,
+    default: EUserRole.REGULAR,
+    required: true,
+  })
+  role: EUserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

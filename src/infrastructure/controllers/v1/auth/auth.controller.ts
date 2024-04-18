@@ -2,7 +2,9 @@ import { Body, Controller, Get, HttpStatus, Post, Request, UseGuards } from "@ne
 import { SignupDTO } from "src/application/dtos";
 import { DefaultApiResponse, SignInPresentation } from "src/application/presentations";
 import { SignInV1, SignUpV1 } from "src/application/use-cases";
-import { JwtAuthGuard, LocalAuthGuard } from "src/infrastructure/config";
+import { EUserRole } from "src/domain/entities";
+import { JwtAuthGuard, LocalAuthGuard, RoleGuard } from "src/infrastructure/config";
+import { Roles } from "src/infrastructure/decorators";
 
 @Controller({
   version: "1",
@@ -30,8 +32,16 @@ export class AuthControllerV1 {
   }
 
   @Get("/")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(EUserRole.REGULAR)
   async health(): Promise<DefaultApiResponse<any>> {
     return { message: "User logged in", status: HttpStatus.OK };
+  }
+
+  @Get("/admin")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(EUserRole.ADMINISTRATOR)
+  async healthAdmin(): Promise<DefaultApiResponse<any>> {
+    return { message: "User logged in as an admin", status: HttpStatus.OK };
   }
 }

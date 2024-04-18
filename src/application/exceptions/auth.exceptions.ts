@@ -24,3 +24,9 @@ export class UserNotFound extends GenericHttpException {
     super("User not found.", HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
   }
 }
+
+export class UserNotAllowed extends GenericHttpException {
+  constructor() {
+    super("User is not allowed to access this resource.", HttpStatus.UNAUTHORIZED, "USER_NOT_ALLOWED");
+  }
+}

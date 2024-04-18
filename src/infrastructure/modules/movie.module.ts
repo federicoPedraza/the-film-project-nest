@@ -7,6 +7,7 @@ import { Entity, PORT } from "src/application/enums";
 import * as UseCase from "src/application/use-cases";
 import { MovieProviderFactoryModule, MovieProviderStrategyFactory } from "../services";
 import { HttpModule } from "@nestjs/axios";
+import { AccessControlModule } from "../config/access-control";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HttpModule } from "@nestjs/axios";
     ]),
     MovieProviderFactoryModule,
     HttpModule,
+    AccessControlModule,
   ],
   controllers: [MovieControllerV1],
   providers: [
