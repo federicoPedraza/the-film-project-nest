@@ -20,7 +20,7 @@ export class StarwarsRepository implements IStarwarsRepository {
   }
 
   async getFilm(id: string): Promise<IStarwarsMovie> {
-    const url: string = `${this.STARWARS_BASE_URL}/films/${id}`;
+    const url: string = this.getReference(id);
 
     const result = await lastValueFrom(
       this.httpService.get(url).pipe(
@@ -61,6 +61,10 @@ export class StarwarsRepository implements IStarwarsRepository {
 
       throw error;
     }
+  }
+
+  getReference(id: string): string {
+    return `${this.STARWARS_BASE_URL}/films/${id}/`;
   }
 
   map = (movie: any): IStarwarsMovie => {

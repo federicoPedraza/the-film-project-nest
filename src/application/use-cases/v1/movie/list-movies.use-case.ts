@@ -1,7 +1,7 @@
 import { Inject, Logger } from "@nestjs/common";
 import { EMovieProvider, PORT } from "src/application/enums";
 import { ListMoviesPresentation, ListedMovieItemPresentation } from "src/application/presentations";
-import { IProviderQuery } from "src/infrastructure/interfaces";
+import { IMovieRepository, IProviderQuery, ProviderType } from "src/infrastructure/interfaces";
 import { MovieProviderStrategyFactory } from "src/infrastructure/services";
 
 export const DEFAULT_MOVIE_LIST_COUNT = 6;
@@ -9,7 +9,10 @@ export const DEFAULT_MOVIE_LIST_COUNT = 6;
 export class ListMoviesV1 {
   private readonly logger = new Logger(ListMoviesV1.name);
 
-  constructor(@Inject(PORT.MovieProviderStrategyFactory) private readonly movieProviderStrategyFactory: MovieProviderStrategyFactory) {}
+  constructor(
+    @Inject(PORT.MovieProviderStrategyFactory) private readonly movieProviderStrategyFactory: MovieProviderStrategyFactory,
+    @Inject(PORT.Movie) private readonly movieRepository: IMovieRepository,
+  ) {}
 
   async exec(query?: IListMovieQuery): Promise<ListMoviesPresentation> {
     const items: ListedMovieItemPresentation[] = await this.getMovies(query);
@@ -51,10 +54,30 @@ export class ListMoviesV1 {
 
     const movies = await strategy.getFilms(providerQuery);
 
+    if (provider !== EMovieProvider.CUSTOM) {
+      const mockedMovies = await this.movieRepository.getFilmsFromProvider(provider, providerQuery);
+      const mockedMoviesByReference = this.getMockedMoviesByReference(mockedMovies);
+
+      return movies.map(movie => {
+        const mockedMovie = mockedMoviesByReference[movie.providerReference];
+        return {
+          title: mockedMovie?.title || movie.title,
+          provider,
+        };
+      });
+    }
+
     return movies.map(movie => ({
       title: movie.title,
       provider,
     }));
+  }
+
+  private getMockedMoviesByReference(movies: ProviderType[]): { [key: string]: ProviderType } {
+    return movies.reduce((acc, movie) => {
+      acc[movie.providerReference] = movie;
+      return acc;
+    }, {});
   }
 }
 

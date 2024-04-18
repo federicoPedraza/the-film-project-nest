@@ -9,6 +9,7 @@ export interface IMovie extends IMongoDBEntity {
   director: string;
   provider: EMovieProvider;
   metadata: IMovieMetadata;
+  providerReference?: string;
 }
 
 @Schema({ versionKey: false, timestamps: true })
@@ -21,6 +22,9 @@ export class Movie extends Document implements IMovie {
 
   @Prop({ type: String, enum: EMovieProvider, required: true })
   provider: EMovieProvider;
+
+  @Prop({ type: String })
+  providerReference: string;
 
   @Prop({ type: MovieMetadataSchema, required: true })
   metadata: MovieMetadata;

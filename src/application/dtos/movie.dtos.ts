@@ -1,4 +1,5 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, isNotEmpty } from "class-validator";
+import { ProviderType } from "src/infrastructure/interfaces";
 
 export class PostMovieDTO {
   @IsString()
@@ -20,4 +21,10 @@ export class PostMovieDTO {
   @IsString()
   @IsOptional()
   producer?: string;
+}
+
+export class EditMovieDTO {
+  @IsObject()
+  @IsOptional()
+  providerFields?: Partial<ProviderType>;
 }

@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Query, Request, UseGuards } from "@nestjs/common";
-import { PostMovieDTO } from "src/application/dtos";
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
+import { EditMovieDTO, PostMovieDTO } from "src/application/dtos";
 import { EMovieProvider } from "src/application/enums";
 import { DefaultApiResponse, ListMoviesPresentation, PostMoviePresentation } from "src/application/presentations";
-import { DEFAULT_MOVIE_LIST_COUNT, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
+import { DEFAULT_MOVIE_LIST_COUNT, EditMovieV1, GetMovieDetailsV1, ListMoviesV1, PostMovieV1 } from "src/application/use-cases";
 import { IMovie } from "src/domain/entities";
 import { JwtAuthGuard } from "src/infrastructure/config";
 
@@ -16,6 +16,7 @@ export class MovieControllerV1 {
     private readonly postMovieUseCase: PostMovieV1,
     private readonly listMoviesUseCase: ListMoviesV1,
     private readonly getMovieDetailsUseCase: GetMovieDetailsV1,
+    private readonly editMovieUseCase: EditMovieV1,
   ) {}
 
   @Post("/")
@@ -32,10 +33,17 @@ export class MovieControllerV1 {
     return { message: "List of movies returned successfully", info: list, status: HttpStatus.OK };
   }
 
-  @Get("/:provider/:id")
-  async getDetails(@Param("id") movieId: string, @Param("provider") provider: EMovieProvider): Promise<DefaultApiResponse<IMovie>> {
-    const details = await this.getMovieDetailsUseCase.exec(provider, movieId);
+  @Get("/:provider/:reference")
+  async getDetails(@Param("reference") reference: string, @Param("provider") provider: EMovieProvider): Promise<DefaultApiResponse<IMovie>> {
+    const details = await this.getMovieDetailsUseCase.exec(provider, reference);
 
     return { message: "Movie details returned successfully", info: details, status: HttpStatus.OK };
+  }
+
+  @Put("/:provider/:reference")
+  async updateMovie(@Param("provider") provider: EMovieProvider, @Param("reference") reference: string, @Body() body: EditMovieDTO): Promise<DefaultApiResponse<any>> {
+    await this.editMovieUseCase.exec(body, reference, provider);
+
+    return { message: "Movie editted successfully", status: HttpStatus.OK };
   }
 }

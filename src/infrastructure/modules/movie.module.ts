@@ -22,6 +22,7 @@ import { HttpModule } from "@nestjs/axios";
     UseCase.PostMovieV1,
     UseCase.ListMoviesV1,
     UseCase.GetMovieDetailsV1,
+    UseCase.EditMovieV1,
     { provide: PORT.Movie, useClass: MovieRepository },
     { provide: PORT.Starwars, useClass: StarwarsRepository },
     { provide: PORT.User, useClass: UserRepository },
