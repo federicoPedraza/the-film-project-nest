@@ -23,7 +23,6 @@ export class PostMovieV1 {
     };
 
     const result = await this.movieRepository.create(data);
-
     return result;
   }
 }
