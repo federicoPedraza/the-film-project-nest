@@ -1,6 +1,6 @@
 {
   "name": "the-film-project",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Pulic movie management API with NestJS. Entrance work for Conexa",
   "author": "federico.pedraza4@gmail.com",
   "private": false,

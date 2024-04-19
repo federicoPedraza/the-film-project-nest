@@ -1,73 +1,73 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🎬 The Film Project
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The Film Project es una aplicación de administración de películas creada a partir del trabajo práctico enviado por Conexa para conocer las mejores prácticas del candidato.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 🚀 Instrucciones de uso
 
-## Description
+#### Vercel Build
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+La aplicación está desplegada en Vercel. Puedes acceder a ella en el siguiente enlace:
 
-## Installation
+https://the-film-project-pyar7ebmc-federico-pedrazas-projects.vercel.app/api/v1/
+
+Al ingresar, debería decir "OK". De lo contrario, algo ha ocurrido 😕.
+
+#### Ejecución local
+
+Para correr la aplicación localmente, necesitas seguir estos pasos:
+
+Completar los archivos .env (utiliza las .env.example como guía).
+Ejecutar el comando de Docker Compose:
 
 ```bash
-$ pnpm install
+docker-compose -f local-docker-compose.yml up -d
 ```
 
-## Running the app
+### 🔍 Funcionamiento
 
-```bash
-# development
-$ pnpm run start
+Las instrucciones del proyecto mencionan que se debe crear una aplicación de gestión de películas con usuarios, basando las acciones posibles en los roles que tenga el usuario. Este proyecto obtiene información de la API pública de Star Wars.
 
-# watch mode
-$ pnpm run start:dev
+Para este proyecto, se utilizó la API de https://swapi.dev/.
 
-# production mode
-$ pnpm run start:prod
-```
+La forma en que se obtiene la información de Star Wars fue un tanto creativa. Durante el desarrollo de la aplicación, se le dio más énfasis a la parte de gestión de películas que a la obtención de información de la API de Star Wars.
 
-## Test
+Star Wars no es más que un proveedor de información, al igual que pueden existir otros posibles proveedores de películas (PokemonAPI, RickAndMortyAPI, TheMovieDatabase).
 
-```bash
-# unit tests
-$ pnpm run test
+### Funcionalidades para Usuarios Regulares:
 
-# e2e tests
-$ pnpm run test:e2e
+#### Listar Películas:
 
-# test coverage
-$ pnpm run test:cov
-```
+El usuario regular puede listar películas de múltiples proveedores.
+Se presentarán las películas de un proveedor hasta que se agoten, luego se mostrarán las películas del siguiente proveedor.
+Ejemplo: Si el usuario solicita 6 películas y el proveedor por defecto es "custom", se mostrarán todas las películas "custom" disponibles y luego se completará con las películas del siguiente proveedor.
 
-## Support
+#### Obtener Detalles de una Película:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Los usuarios regulares pueden obtener detalles de una película proporcionando el nombre del proveedor y la referencia.
+Para películas "custom", se proporciona el ObjectId de MongoDB; para otras películas, se usa el ID del proveedor correspondiente.
 
-## Stay in touch
+### Funcionalidades para Usuarios Administradores:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Crear Películas "Custom":
 
-## License
+Los administradores pueden crear películas "custom" con detalles mínimos.
+Estas películas se guardan como "custom" en la base de datos.
 
-Nest is [MIT licensed](LICENSE).
+#### Eliminar Películas:
+
+Los administradores pueden eliminar películas.
+
+#### Editar Películas:
+
+Los administradores pueden editar películas proporcionando los campos a cambiar, el proveedor y la referencia.
+Para películas "custom", se edita el documento en MongoDB.
+_Para películas de otros proveedores, se almacena o edita una copia exacta de la película en nuestra base de datos con los campos editados._
+Importante:
+
+**Las ediciones afectan a todas las funcionalidades de la aplicación.
+Los detalles, listados y búsquedas de películas mostrarán la información modificada, no la proporcionada por el proveedor original.
+Las copias falsas pueden ser eliminadas en cualquier momento.**
+
+## ⚠️ Comentarios sobre las pruebas
+
+Personalmente, considero que las pruebas son un tanto incompletas y no cumplen con una cobertura suficiente para garantizar que todo esté funcionando correctamente. Me gustaría tener la oportunidad de ver pruebas aplicadas a esta arquitectura que diseñé durante mi tiempo utilizando NestJS, ya que no había aplicado pruebas para esta arquitectura anteriormente.
